@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   GraduationCap,
   ArrowRight,
@@ -19,7 +19,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { SimulationWorkspace } from "@/components/simulation/simulation-workspace";
-import { SCENARIOS } from "@/lib/mock-scenarios";
+import {
+  SCENARIOS,
+  applyDiagnosisToScenario,
+  getScenarioById,
+  resolveScenarioIdFromDtc,
+} from "@/lib/mock-scenarios";
+import {
+  clearDiagnosisTransfer,
+  loadDiagnosisTransfer,
+} from "@/lib/session";
 import type { Scenario } from "@/lib/types";
 
 const ICONS = [Signal, Gauge, CircleGauge];
@@ -32,18 +41,67 @@ const DIFFICULTY_COLOR: Record<string, string> = {
 
 export default function SimulationPage() {
   const [selected, setSelected] = useState<Scenario | null>(null);
+  const [fromDiagnosis, setFromDiagnosis] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const transfer = loadDiagnosisTransfer();
+
+    if (transfer) {
+      const scenarioId = resolveScenarioIdFromDtc(transfer.dtcCode);
+      const base = getScenarioById(scenarioId) ?? SCENARIOS[0];
+      const merged = applyDiagnosisToScenario(base, transfer);
+      setSelected(merged);
+      setFromDiagnosis(true);
+      clearDiagnosisTransfer();
+
+      if (typeof window !== "undefined") {
+        window.history.replaceState({}, "", "/simulation");
+      }
+    }
+
+    setReady(true);
+  }, []);
+
+  const handleBack = () => {
+    setSelected(null);
+    setFromDiagnosis(false);
+  };
+
+  if (!ready) {
+    return (
+      <div className="flex min-h-[30vh] items-center justify-center text-sm text-muted-foreground">
+        실습 환경을 준비하는 중...
+      </div>
+    );
+  }
 
   if (selected) {
     return (
       <div>
         <PageHeader
           title="AI 기반 섀시시스템 진단 실습"
-          description="가상 차량의 고장 상황을 분석하고 진단 절차를 직접 수행해 보세요."
+          description={
+            fromDiagnosis
+              ? "고장 진단에서 입력한 차량 정보와 DTC를 바탕으로 실습을 진행합니다."
+              : "가상 차량의 고장 상황을 분석하고 진단 절차를 직접 수행해 보세요."
+          }
         />
-        <SimulationWorkspace
-          scenario={selected}
-          onBack={() => setSelected(null)}
-        />
+        {fromDiagnosis ? (
+          <div className="mb-4 rounded-lg border border-primary/20 bg-accent/40 px-4 py-3 text-xs text-muted-foreground">
+            고장 진단에서 전달된 차량:{" "}
+            <span className="font-medium text-foreground">
+              {selected.vehicle.year} {selected.vehicle.manufacturer}{" "}
+              {selected.vehicle.model}
+            </span>
+            {" · "}
+            DTC{" "}
+            <span className="font-medium text-foreground">
+              {selected.dtcCode}
+            </span>
+          </div>
+        ) : null}
+        <SimulationWorkspace scenario={selected} onBack={handleBack} />
       </div>
     );
   }
@@ -101,7 +159,10 @@ export default function SimulationPage() {
                 </div>
                 <Button
                   className="h-9 w-full"
-                  onClick={() => setSelected(scenario)}
+                  onClick={() => {
+                    setFromDiagnosis(false);
+                    setSelected(scenario);
+                  }}
                 >
                   실습 시작
                   <ArrowRight data-icon="inline-end" />

@@ -1,4 +1,5 @@
-import type { Scenario } from "./types";
+import { lookupDtc } from "./dtc-catalog";
+import type { DiagnosisInput, Scenario } from "./types";
 
 export const SCENARIOS: Scenario[] = [
   {
@@ -110,6 +111,43 @@ export const SCENARIOS: Scenario[] = [
 
 export function getScenarioById(id: string): Scenario | undefined {
   return SCENARIOS.find((s) => s.id === id);
+}
+
+export function resolveScenarioIdFromDtc(dtcCode: string): string {
+  return lookupDtc(dtcCode)?.scenarioHint ?? "abs-wheel-speed";
+}
+
+/** 고장 진단에서 입력한 차량·DTC 정보를 실습 시나리오에 반영합니다. */
+export function applyDiagnosisToScenario(
+  base: Scenario,
+  input: DiagnosisInput
+): Scenario {
+  const dtc = input.dtcCode.trim().toUpperCase() || base.dtcCode;
+  return {
+    ...base,
+    vehicle: {
+      manufacturer: input.manufacturer || base.vehicle.manufacturer,
+      model: input.model || base.vehicle.model,
+      year: input.year || base.vehicle.year,
+      system: input.system || base.vehicle.system,
+    },
+    symptom: input.symptoms.trim() || base.symptom,
+    dtcCode: dtc,
+    dtcName: input.dtcName.trim() || base.dtcName,
+    initialAiMessage: buildInitialMessage(input, base),
+    toolResults: {
+      ...base.toolResults,
+      dtc: `DTC ${dtc} — ${input.dtcName.trim() || base.dtcName}이(가) 확인되었습니다.\n차량: ${input.year} ${input.manufacturer} ${input.model}\n증상: ${input.symptoms.trim() || base.symptom}\n\n※ 교육용 가상 진단 데이터입니다. (고장 진단에서 전달된 정보)`,
+    },
+  };
+}
+
+function buildInitialMessage(input: DiagnosisInput, base: Scenario): string {
+  const symptom = input.symptoms.trim() || base.symptom;
+  const dtc = input.dtcCode.trim().toUpperCase() || base.dtcCode;
+  const vehicle = `${input.year} ${input.manufacturer} ${input.model}`.trim();
+
+  return `${vehicle} 차량에서 다음 증상이 확인되었습니다.\n\n증상: ${symptom}\nDTC: ${dtc} (${input.dtcName.trim() || base.dtcName})\n\n진단기를 통해 관련 고장코드가 확인된 상황입니다.\n\n어떤 항목부터 점검하시겠습니까?`;
 }
 
 export function generateWheelSpeedData() {

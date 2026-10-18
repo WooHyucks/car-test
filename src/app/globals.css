@@ -101,6 +101,12 @@
   }
 }
 
+/* Prevent horizontal page scroll on narrow screens */
+html,
+body {
+  overflow-x: hidden;
+}
+
 @media print {
   .no-print {
     display: none !important;

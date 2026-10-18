@@ -16,25 +16,25 @@ const data = generateWheelSpeedData();
 
 export function SensorChart() {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <div className="mb-3 flex items-center justify-between">
+    <div className="overflow-hidden rounded-lg border border-border bg-card p-3 sm:p-4">
+      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm font-medium text-foreground">실시간 휠 속도</p>
-        <span className="rounded bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
+        <span className="w-fit rounded bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
           교육용 가상 센서 데이터
         </span>
       </div>
-      <div className="h-56 w-full">
+      <div className="h-48 w-full min-w-0 sm:h-56">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
+          <LineChart data={data} margin={{ left: 0, right: 8, top: 4, bottom: 0 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
             <XAxis
               dataKey="time"
-              tick={{ fontSize: 11, fill: "#64748B" }}
+              tick={{ fontSize: 10, fill: "#64748B" }}
               stroke="#E2E8F0"
             />
             <YAxis
-              unit=" km/h"
-              tick={{ fontSize: 11, fill: "#64748B" }}
+              width={36}
+              tick={{ fontSize: 10, fill: "#64748B" }}
               stroke="#E2E8F0"
               domain={[0, 50]}
             />

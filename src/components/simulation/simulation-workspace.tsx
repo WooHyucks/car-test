@@ -27,6 +27,7 @@ import { SensorChart } from "./sensor-chart";
 import { SubmitModal } from "./submit-modal";
 import { getMockChatResponse, delay } from "@/lib/mock-ai";
 import { saveSimulationSession } from "@/lib/session";
+import { getChassisSystemLabel } from "@/lib/vehicles";
 import type { ChatMessage, Scenario, ToolAction } from "@/lib/types";
 
 const TOOLS: { id: ToolAction; label: string }[] = [
@@ -150,9 +151,9 @@ export function SimulationWorkspace({
         </div>
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-[260px_1fr_300px]">
+      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-[240px_minmax(0,1fr)_280px]">
         {/* Left: Vehicle panel */}
-        <Card className="border-border bg-card shadow-none ring-1 ring-border h-fit">
+        <Card className="h-fit border-border bg-card shadow-none ring-1 ring-border lg:order-1 xl:order-none">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-sm">
               <Car className="size-4 text-primary" />
@@ -160,19 +161,21 @@ export function SimulationWorkspace({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
-            {[
-              ["제조사", scenario.vehicle.manufacturer],
-              ["차종", scenario.vehicle.model],
-              ["연식", scenario.vehicle.year],
-              ["시스템", scenario.vehicle.system],
-              ["현재 증상", scenario.symptom],
-              ["DTC 코드", scenario.dtcCode],
-            ].map(([label, value]) => (
-              <div key={label}>
-                <p className="text-xs text-muted-foreground">{label}</p>
-                <p className="mt-0.5 font-medium">{value}</p>
-              </div>
-            ))}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-1 xl:gap-3">
+              {[
+                ["제조사", scenario.vehicle.manufacturer],
+                ["차종", scenario.vehicle.model],
+                ["연식", scenario.vehicle.year],
+                ["시스템", getChassisSystemLabel(scenario.vehicle.system)],
+                ["현재 증상", scenario.symptom],
+                ["DTC 코드", scenario.dtcCode],
+              ].map(([label, value]) => (
+                <div key={label}>
+                  <p className="text-xs text-muted-foreground">{label}</p>
+                  <p className="mt-0.5 font-medium">{value}</p>
+                </div>
+              ))}
+            </div>
             <div className="rounded-lg border border-border bg-muted/50 p-3">
               <p className="text-xs font-medium text-foreground">실습 목표</p>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
@@ -186,18 +189,18 @@ export function SimulationWorkspace({
         </Card>
 
         {/* Center: Chat */}
-        <Card className="flex min-h-[560px] flex-col border-border bg-card shadow-none ring-1 ring-border">
+        <Card className="flex min-h-[420px] flex-col border-border bg-card shadow-none ring-1 ring-border sm:min-h-[480px] lg:order-3 lg:col-span-2 xl:order-none xl:col-span-1 xl:min-h-[560px]">
           <CardHeader className="border-b border-border">
             <CardTitle className="flex items-center gap-2 text-sm">
               <MessageSquare className="size-4 text-primary" />
               AI 진단 어시스턴트
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs sm:text-sm">
               AI 응답 시뮬레이션 · 교육용 데모 · 정답을 바로 알려주지 않습니다
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-1 flex-col gap-0 p-0">
-            <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+            <div className="max-h-[50vh] flex-1 space-y-3 overflow-y-auto px-3 py-4 sm:max-h-none sm:px-4">
               <AnimatePresence initial={false}>
                 {messages.map((msg) => (
                   <motion.div
@@ -206,8 +209,8 @@ export function SimulationWorkspace({
                     animate={{ opacity: 1, y: 0 }}
                     className={
                       msg.role === "student"
-                        ? "ml-8 flex justify-end"
-                        : "mr-8 flex justify-start"
+                        ? "ml-4 flex justify-end sm:ml-8"
+                        : "mr-4 flex justify-start sm:mr-8"
                     }
                   >
                     <div
@@ -225,7 +228,7 @@ export function SimulationWorkspace({
                 ))}
               </AnimatePresence>
               {isTyping ? (
-                <div className="mr-8 flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="mr-4 flex items-center gap-2 text-xs text-muted-foreground sm:mr-8">
                   <Loader2 className="size-3.5 animate-spin" />
                   AI가 응답을 준비하는 중...
                 </div>
@@ -244,8 +247,13 @@ export function SimulationWorkspace({
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="예: 휠 속도센서 데이터를 확인하겠습니다."
                 disabled={isTyping}
+                className="min-w-0"
               />
-              <Button type="submit" disabled={isTyping || !input.trim()}>
+              <Button
+                type="submit"
+                disabled={isTyping || !input.trim()}
+                className="shrink-0"
+              >
                 <Send />
               </Button>
             </form>
@@ -253,18 +261,20 @@ export function SimulationWorkspace({
         </Card>
 
         {/* Right: Tools */}
-        <div className="space-y-4">
+        <div className="space-y-4 lg:order-2 xl:order-none">
           <Card className="border-border bg-card shadow-none ring-1 ring-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-sm">
                 <Wrench className="size-4 text-primary" />
                 진단 도구
               </CardTitle>
-              <CardDescription>점검 진행률 {Math.round(progress)}%</CardDescription>
+              <CardDescription>
+                점검 진행률 {Math.round(progress)}%
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <Progress value={progress} className="h-1.5" />
-              <div className="space-y-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-1">
                 {TOOLS.map((tool) => {
                   const done = checkedTools.includes(tool.id);
                   return (

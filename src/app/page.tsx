@@ -11,6 +11,8 @@ import {
   ArrowRight,
   FileSearch,
   ClipboardCheck,
+  BookMarked,
+  BarChart3,
 } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
@@ -54,7 +56,39 @@ export default function DashboardPage() {
         description="AI 기반 고장 진단 분석과 시뮬레이션 실습을 통해 차량 제어 시스템의 이해와 문제 해결 능력을 향상시킵니다."
       />
 
-      <div className="grid gap-5 lg:grid-cols-2">
+      <Card className="mb-5 border-border bg-card shadow-none ring-1 ring-border">
+        <CardContent className="pt-1">
+          <p className="mb-3 text-xs font-medium text-muted-foreground">
+            AI 교육 활용 흐름 (시연 포인트)
+          </p>
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+            {[
+              { href: "/diagnosis", label: "DTC → 고장코드", icon: ScanSearch },
+              { href: "/simulation", label: "학생 실습", icon: GraduationCap },
+              { href: "/analytics", label: "평균·취약점", icon: BarChart3 },
+              { href: "/cases", label: "다음 수업·사례", icon: BookMarked },
+            ].map((item, i) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.href} className="flex items-center gap-2">
+                  <Link
+                    href={item.href}
+                    className="inline-flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm font-medium transition-colors hover:border-primary/30 hover:bg-accent"
+                  >
+                    <Icon className="size-4 text-primary" />
+                    {item.label}
+                  </Link>
+                  {i < 3 ? (
+                    <ArrowRight className="hidden size-4 text-muted-foreground sm:block" />
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="grid gap-5 lg:grid-cols-2 xl:grid-cols-3">
         <Card className="border-border bg-card shadow-none ring-1 ring-border">
           <CardHeader>
             <div className="mb-2 flex size-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -98,6 +132,30 @@ export default function DashboardPage() {
               className="h-10 px-4"
             >
               진단 실습 시작
+              <ArrowRight data-icon="inline-end" />
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border bg-card shadow-none ring-1 ring-border lg:col-span-2 xl:col-span-1">
+          <CardHeader>
+            <div className="mb-2 flex size-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <BookMarked className="size-5" />
+            </div>
+            <CardTitle className="text-lg">활용 사례 기록</CardTitle>
+            <CardDescription className="text-sm leading-relaxed">
+              진단·실습에서 발견한 교육 포인트를 기록하고 다음 수업 방향을
+              설계합니다.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              render={<Link href="/cases" />}
+              nativeButton={false}
+              size="lg"
+              className="h-10 px-4"
+            >
+              사례 보드 열기
               <ArrowRight data-icon="inline-end" />
             </Button>
           </CardContent>
@@ -147,17 +205,17 @@ export default function DashboardPage() {
             {DASHBOARD_STATS.recentActivities.map((item) => (
               <li
                 key={item.id}
-                className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"
+                className="flex flex-col gap-2 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 flex size-8 items-center justify-center rounded-md bg-muted">
+                <div className="flex min-w-0 items-start gap-3">
+                  <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md bg-muted">
                     {item.type === "diagnosis" ? (
                       <FileSearch className="size-4 text-muted-foreground" />
                     ) : (
                       <ClipboardCheck className="size-4 text-muted-foreground" />
                     )}
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-sm font-medium text-foreground">
                       {item.title}
                     </p>
@@ -166,7 +224,7 @@ export default function DashboardPage() {
                     </p>
                   </div>
                 </div>
-                <span className="shrink-0 text-xs text-muted-foreground">
+                <span className="shrink-0 pl-11 text-xs text-muted-foreground sm:pl-0">
                   {item.time}
                 </span>
               </li>

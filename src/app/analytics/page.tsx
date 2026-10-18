@@ -16,8 +16,18 @@ import {
   PolarRadiusAxis,
   Radar,
 } from "recharts";
-import { Users, Target, CheckCircle2, AlertTriangle, Sparkles } from "lucide-react";
+import {
+  Users,
+  Target,
+  CheckCircle2,
+  AlertTriangle,
+  Sparkles,
+  ArrowRight,
+  ClipboardList,
+} from "lucide-react";
+import Link from "next/link";
 import { PageHeader } from "@/components/ui/page-header";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -95,8 +105,8 @@ export default function AnalyticsPage() {
             <CardTitle className="text-base">학생별 진단 점수 분포</CardTitle>
             <CardDescription>점수 구간별 학생 수</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="h-64">
+          <CardContent className="overflow-x-auto">
+            <div className="h-56 min-w-[280px] sm:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={ANALYTICS_MOCK.scoreDistribution}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
@@ -124,14 +134,14 @@ export default function AnalyticsPage() {
             <CardTitle className="text-base">평가 항목별 평균 점수</CardTitle>
             <CardDescription>5개 역량 영역 비교</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="h-64">
+          <CardContent className="overflow-x-auto">
+            <div className="h-56 min-w-[280px] sm:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={ANALYTICS_MOCK.categoryAverages}>
                   <PolarGrid stroke="#E2E8F0" />
                   <PolarAngleAxis
                     dataKey="category"
-                    tick={{ fontSize: 11, fill: "#64748B" }}
+                    tick={{ fontSize: 9, fill: "#64748B" }}
                   />
                   <PolarRadiusAxis
                     angle={30}
@@ -163,21 +173,21 @@ export default function AnalyticsPage() {
             <CardTitle className="text-base">주요 오개념 분석</CardTitle>
             <CardDescription>실습 중 자주 나타난 오개념</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="h-64">
+          <CardContent className="overflow-x-auto">
+            <div className="h-56 min-w-[320px] sm:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   layout="vertical"
                   data={ANALYTICS_MOCK.misconceptions}
-                  margin={{ left: 20 }}
+                  margin={{ left: 8 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
                   <XAxis type="number" tick={{ fontSize: 11, fill: "#64748B" }} />
                   <YAxis
                     type="category"
                     dataKey="name"
-                    width={120}
-                    tick={{ fontSize: 10, fill: "#64748B" }}
+                    width={100}
+                    tick={{ fontSize: 9, fill: "#64748B" }}
                   />
                   <Tooltip
                     contentStyle={{
@@ -198,8 +208,8 @@ export default function AnalyticsPage() {
             <CardTitle className="text-base">주차별 학습 성취도 변화</CardTitle>
             <CardDescription>평균 진단 점수 추이</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="h-64">
+          <CardContent className="overflow-x-auto">
+            <div className="h-56 min-w-[280px] sm:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={ANALYTICS_MOCK.weeklyProgress}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
@@ -208,6 +218,7 @@ export default function AnalyticsPage() {
                     tick={{ fontSize: 11, fill: "#64748B" }}
                   />
                   <YAxis
+                    width={36}
                     domain={[60, 100]}
                     tick={{ fontSize: 11, fill: "#64748B" }}
                   />
@@ -233,22 +244,91 @@ export default function AnalyticsPage() {
         </Card>
       </div>
 
-      <Card className="mt-6 border-primary/20 bg-accent/40 shadow-none ring-1 ring-primary/20">
+      <Card className="mt-6 border-border bg-card shadow-none ring-1 ring-border">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Sparkles className="size-4 text-primary" />
-            AI 교수자 인사이트
-          </CardTitle>
+          <CardTitle className="text-base">AI 교육 활용 루프</CardTitle>
           <CardDescription>
-            Mock AI 기반 수업 개선 제안 · 가상의 예시 데이터
+            DTC → 실습 → 평균 분석 → 다음 수업 추천으로 이어지는 교수 설계
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="whitespace-pre-line text-sm leading-relaxed text-foreground">
-            {ANALYTICS_MOCK.insight}
-          </p>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {ANALYTICS_MOCK.learningLoop.map((item, i) => (
+              <div
+                key={item.step}
+                className="relative rounded-lg border border-border bg-muted/30 p-3"
+              >
+                <p className="text-[11px] font-semibold tracking-wide text-primary">
+                  STEP {item.step}
+                </p>
+                <p className="mt-1 text-sm font-medium text-foreground">
+                  {item.title}
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  {item.detail}
+                </p>
+                {i < ANALYTICS_MOCK.learningLoop.length - 1 ? (
+                  <ArrowRight className="absolute -right-2 top-1/2 hidden size-4 -translate-y-1/2 text-muted-foreground xl:block" />
+                ) : null}
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
+
+      <div className="mt-6 grid gap-5 lg:grid-cols-[1.2fr_1fr]">
+        <Card className="border-primary/20 bg-accent/40 shadow-none ring-1 ring-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Sparkles className="size-4 text-primary" />
+              AI 교수자 인사이트
+            </CardTitle>
+            <CardDescription>
+              Mock AI 기반 수업 개선 제안 · 가상의 예시 데이터
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="whitespace-pre-line text-sm leading-relaxed text-foreground">
+              {ANALYTICS_MOCK.insight}
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-border bg-card shadow-none ring-1 ring-border">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <ClipboardList className="size-4 text-primary" />
+              다음 수업 준비 추천
+            </CardTitle>
+            <CardDescription>취약 영역 기반 보충 모듈</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {ANALYTICS_MOCK.nextClassPlan.map((plan) => (
+              <div
+                key={plan.title}
+                className="rounded-lg border border-border bg-muted/30 px-3 py-2.5"
+              >
+                <p className="text-sm font-medium text-foreground">
+                  {plan.title}
+                </p>
+                <p className="mt-1 text-[11px] text-warning">{plan.reason}</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  {plan.action}
+                </p>
+              </div>
+            ))}
+            <Button
+              render={<Link href="/cases" />}
+              nativeButton={false}
+              variant="outline"
+              className="w-full"
+            >
+              활용 사례에 기록하기
+              <ArrowRight data-icon="inline-end" />
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

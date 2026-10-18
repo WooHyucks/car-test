@@ -20,7 +20,7 @@ export default function DiagnosisPage() {
   const handleSubmit = async (formInput: DiagnosisInput) => {
     setInput(formInput);
     setView("loading");
-    await delay(1700);
+    await delay(3800);
     const analysis = analyzeDiagnosis(formInput);
     setResult(analysis);
     setView("result");
@@ -48,7 +48,9 @@ export default function DiagnosisPage() {
         <DiagnosisForm onSubmit={handleSubmit} isLoading={false} />
       ) : null}
 
-      {view === "loading" ? <DiagnosisLoading /> : null}
+      {view === "loading" ? (
+        <DiagnosisLoading dtcCode={input?.dtcCode} />
+      ) : null}
 
       {view === "result" && input && result ? (
         <DiagnosisResultView

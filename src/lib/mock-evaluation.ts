@@ -203,6 +203,45 @@ export const ANALYTICS_MOCK = {
   ],
   insight:
     "학생들의 DTC 코드 이해도는 높지만, 센서 데이터 해석과 고장 원인 추론 과정에서 상대적으로 낮은 성취도를 보였습니다.\n\n다음 수업에서는 휠 속도센서 신호 분석과 ABS·ESC 통합제어 관계를 중심으로 보충 학습을 진행하는 것을 권장합니다.",
+  learningLoop: [
+    {
+      step: "01",
+      title: "DTC → 고장코드",
+      detail: "코드 입력 시 약어·고장코드명 자동 매칭으로 개념 정착",
+    },
+    {
+      step: "02",
+      title: "학생 진단 실습",
+      detail: "AI가 정답을 숨기고 점검·추론 과정을 유도",
+    },
+    {
+      step: "03",
+      title: "평균·취약점",
+      detail: "항목별 점수와 오개념 빈도로 수업 격차 파악",
+    },
+    {
+      step: "04",
+      title: "다음 수업 추천",
+      detail: "취약 영역에 맞춘 보충 모듈을 AI가 제안",
+    },
+  ],
+  nextClassPlan: [
+    {
+      title: "보충 1 · 센서 데이터 해석 워크숍",
+      reason: "평균 74점으로 가장 낮은 영역",
+      action: "4휠 속도 비교 차트 실습 후 이상 신호 근거를 문장으로 작성",
+    },
+    {
+      title: "보충 2 · 배선 점검 체크리스트",
+      reason: "센서 즉시 교체 오개념 14건",
+      action: "부품 교체 전 필수 점검 3단계를 실습 루브릭에 반영",
+    },
+    {
+      title: "보충 3 · ABS·ESC 통합제어 관계",
+      reason: "원인 추론·논리성 점수 상대적 저하",
+      action: "진단 리포트 Flow Diagram을 활용한 발표 과제",
+    },
+  ],
 };
 
 export const DASHBOARD_STATS = {

@@ -2,11 +2,12 @@
 
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Loader2, ScanSearch } from "lucide-react";
+import { Loader2, ScanSearch, BookOpenCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -28,7 +29,12 @@ import {
   MODELS_BY_MANUFACTURER,
   YEARS,
 } from "@/lib/vehicles";
-import { getSupportedDtcs } from "@/lib/mock-diagnosis";
+import {
+  DTC_CATALOG,
+  lookupDtc,
+  searchDtcs,
+  type DtcEntry,
+} from "@/lib/dtc-catalog";
 
 interface DiagnosisFormProps {
   onSubmit: (input: DiagnosisInput) => void;
@@ -53,6 +59,16 @@ export function DiagnosisForm({ onSubmit, isLoading }: DiagnosisFormProps) {
     return MODELS_BY_MANUFACTURER[form.manufacturer as Manufacturer] ?? [];
   }, [form.manufacturer]);
 
+  const matchedDtc = useMemo(
+    () => lookupDtc(form.dtcCode),
+    [form.dtcCode]
+  );
+
+  const suggestions = useMemo(
+    () => searchDtcs(form.dtcCode),
+    [form.dtcCode]
+  );
+
   const update = <K extends keyof DiagnosisInput>(
     key: K,
     value: DiagnosisInput[K]
@@ -62,6 +78,32 @@ export function DiagnosisForm({ onSubmit, isLoading }: DiagnosisFormProps) {
       if (key === "manufacturer") next.model = "";
       return next;
     });
+  };
+
+  const applyDtcEntry = (entry: DtcEntry) => {
+    setForm((prev) => ({
+      ...prev,
+      dtcCode: entry.code,
+      dtcName: entry.name,
+      symptoms: prev.symptoms.trim() ? prev.symptoms : entry.defaultSymptoms,
+      system: (prev.system || entry.system) as ChassisSystem | "",
+    }));
+  };
+
+  const handleDtcChange = (raw: string) => {
+    const upper = raw.toUpperCase();
+    const entry = lookupDtc(upper);
+    setForm((prev) => ({
+      ...prev,
+      dtcCode: upper,
+      dtcName: entry ? entry.name : prev.dtcName,
+      symptoms:
+        entry && !prev.symptoms.trim() ? entry.defaultSymptoms : prev.symptoms,
+      system:
+        entry && !prev.system
+          ? (entry.system as ChassisSystem)
+          : prev.system,
+    }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -77,35 +119,36 @@ export function DiagnosisForm({ onSubmit, isLoading }: DiagnosisFormProps) {
   };
 
   const fillDemo = () => {
-    setForm({
+    applyDtcEntry(DTC_CATALOG[0]);
+    setForm((prev) => ({
+      ...prev,
       manufacturer: "현대자동차",
       model: "아반떼",
       year: "2022",
       system: "ABS",
-      dtcCode: "C0035",
-      dtcName: "좌측 전륜 휠 속도센서 회로 이상",
-      symptoms: "ABS 경고등 점등, 제동 시 진동 발생",
-    });
+    }));
     toast.success("데모 데이터가 입력되었습니다.");
   };
 
   return (
     <Card className="border-border bg-card shadow-none ring-1 ring-border">
       <CardHeader>
-        <div className="flex items-start justify-between gap-4">
-          <div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
             <CardTitle className="flex items-center gap-2">
-              <ScanSearch className="size-4 text-primary" />
+              <ScanSearch className="size-4 shrink-0 text-primary" />
               차량 정보 입력
             </CardTitle>
-            <CardDescription className="mt-1">
-              지원 데모 DTC: {getSupportedDtcs().join(", ")}
+            <CardDescription className="mt-1 break-keep">
+              지원 데모 DTC {DTC_CATALOG.length}종 · 코드 입력 시 고장코드명 자동
+              매칭
             </CardDescription>
           </div>
           <Button
             type="button"
             variant="outline"
             size="sm"
+            className="w-full shrink-0 sm:w-auto"
             onClick={fillDemo}
             disabled={isLoading}
           >
@@ -185,12 +228,12 @@ export function DiagnosisForm({ onSubmit, isLoading }: DiagnosisFormProps) {
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="시스템 선택" />
+                  <SelectValue placeholder="예: ABS (Anti-lock Braking System)" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-72">
                   {CHASSIS_SYSTEMS.map((s) => (
                     <SelectItem key={s.value} value={s.value}>
-                      {s.label}
+                      {s.abbr} ({s.fullEn})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -198,23 +241,64 @@ export function DiagnosisForm({ onSubmit, isLoading }: DiagnosisFormProps) {
             </Field>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-2">
-            <Field label="DTC 코드">
-              <Input
-                placeholder="예: C0035"
-                value={form.dtcCode}
-                onChange={(e) => update("dtcCode", e.target.value)}
-                disabled={isLoading}
-              />
-            </Field>
-            <Field label="고장코드명">
-              <Input
-                placeholder="예: 좌측 전륜 휠 속도센서 회로 이상"
-                value={form.dtcName}
-                onChange={(e) => update("dtcName", e.target.value)}
-                disabled={isLoading}
-              />
-            </Field>
+          <div className="space-y-3">
+            <div className="grid gap-5 md:grid-cols-2">
+              <Field label="DTC 코드">
+                <Input
+                  placeholder="예: C0035"
+                  value={form.dtcCode}
+                  onChange={(e) => handleDtcChange(e.target.value)}
+                  disabled={isLoading}
+                  className="font-mono uppercase"
+                />
+              </Field>
+              <Field label="고장코드명">
+                <Input
+                  placeholder="DTC 입력 시 자동 표시됩니다"
+                  value={form.dtcName}
+                  onChange={(e) => update("dtcName", e.target.value)}
+                  disabled={isLoading}
+                />
+              </Field>
+            </div>
+
+            {matchedDtc ? (
+              <div className="flex flex-wrap items-center gap-2 rounded-lg border border-primary/20 bg-accent/40 px-3 py-2.5 text-sm">
+                <BookOpenCheck className="size-4 shrink-0 text-primary" />
+                <span className="font-mono font-semibold text-foreground">
+                  {matchedDtc.code}
+                </span>
+                <Badge variant="outline" className="font-mono">
+                  {matchedDtc.abbr}
+                </Badge>
+                <span className="text-muted-foreground">·</span>
+                <span className="text-foreground">{matchedDtc.name}</span>
+                <span className="ml-auto flex items-center gap-1 text-[11px] text-muted-foreground">
+                  <Sparkles className="size-3" />
+                  카탈로그 자동 매칭
+                </span>
+              </div>
+            ) : form.dtcCode.trim().length >= 2 ? (
+              <div className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+                일치하는 DTC가 없습니다. 아래 추천 코드에서 선택하거나 데모
+                카탈로그 코드를 입력해 주세요.
+              </div>
+            ) : null}
+
+            <div className="flex flex-wrap gap-1.5">
+              {suggestions.map((item) => (
+                <button
+                  key={item.code}
+                  type="button"
+                  disabled={isLoading}
+                  onClick={() => applyDtcEntry(item)}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2 py-1 text-[11px] transition-colors hover:border-primary/40 hover:bg-accent"
+                >
+                  <span className="font-mono font-medium">{item.code}</span>
+                  <span className="text-muted-foreground">{item.abbr}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           <Field label="차량 증상">
@@ -227,11 +311,16 @@ export function DiagnosisForm({ onSubmit, isLoading }: DiagnosisFormProps) {
             />
           </Field>
 
-          <div className="flex items-center justify-between gap-4 border-t border-border pt-5">
+          <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-[11px] text-muted-foreground">
               AI 응답 시뮬레이션 · 교육용 데모
             </p>
-            <Button type="submit" size="lg" className="h-10 px-5" disabled={isLoading}>
+            <Button
+              type="submit"
+              size="lg"
+              className="h-10 w-full px-5 sm:w-auto"
+              disabled={isLoading}
+            >
               {isLoading ? (
                 <>
                   <Loader2 className="animate-spin" />

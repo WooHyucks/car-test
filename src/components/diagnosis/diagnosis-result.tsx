@@ -1,7 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowRight, AlertTriangle, CheckCircle2, Printer, RotateCcw } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -11,6 +12,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { lookupDtc } from "@/lib/dtc-catalog";
+import { saveDiagnosisTransfer } from "@/lib/session";
+import { getChassisSystemLabel } from "@/lib/vehicles";
 import type { DiagnosisInput, DiagnosisResult } from "@/lib/types";
 
 interface DiagnosisResultViewProps {
@@ -24,6 +28,15 @@ export function DiagnosisResultView({
   result,
   onReset,
 }: DiagnosisResultViewProps) {
+  const router = useRouter();
+
+  const dtcMeta = lookupDtc(input.dtcCode);
+
+  const handlePractice = () => {
+    saveDiagnosisTransfer(input);
+    toast.success("진단한 차량 정보로 실습을 시작합니다.");
+    router.push("/simulation");
+  };
   if (!result.supported) {
     return (
       <Card className="border-border bg-card shadow-none ring-1 ring-border">
@@ -75,8 +88,13 @@ export function DiagnosisResultView({
               ["제조사", input.manufacturer],
               ["차종", input.model],
               ["연식", input.year],
-              ["시스템", input.system],
-              ["DTC 코드", input.dtcCode.toUpperCase()],
+              ["시스템", getChassisSystemLabel(input.system)],
+              [
+                "DTC 코드",
+                dtcMeta
+                  ? `${input.dtcCode.toUpperCase()} (${dtcMeta.abbr})`
+                  : input.dtcCode.toUpperCase(),
+              ],
             ].map(([label, value]) => (
               <div key={label}>
                 <dt className="text-xs text-muted-foreground">{label}</dt>
@@ -185,7 +203,10 @@ export function DiagnosisResultView({
                   {node}
                 </div>
                 {i < result.integrationImpact.flow.length - 1 ? (
-                  <span className="my-1 text-primary sm:my-0">↓</span>
+                  <span className="my-1 text-primary sm:my-0">
+                    <span className="sm:hidden">↓</span>
+                    <span className="hidden sm:inline">→</span>
+                  </span>
                 ) : null}
               </div>
             ))}
@@ -196,24 +217,27 @@ export function DiagnosisResultView({
         </CardContent>
       </Card>
 
-      <div className="no-print flex flex-wrap items-center gap-3 border-t border-border pt-4">
-        <Button variant="outline" onClick={() => window.print()}>
+      <div className="no-print flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:flex-wrap sm:items-center">
+        <Button
+          variant="outline"
+          className="w-full sm:w-auto"
+          onClick={() => window.print()}
+        >
           <Printer />
           분석 결과 인쇄
         </Button>
-        <Button variant="outline" onClick={onReset}>
+        <Button variant="outline" className="w-full sm:w-auto" onClick={onReset}>
           <RotateCcw />
           분석 초기화
         </Button>
         <Button
-          render={<Link href="/simulation" />}
-          nativeButton={false}
-          className="h-8"
+          className="h-8 w-full sm:w-auto"
+          onClick={handlePractice}
         >
           이 고장으로 실습하기
           <ArrowRight data-icon="inline-end" />
         </Button>
-        <p className="ml-auto text-[11px] text-muted-foreground">
+        <p className="text-[11px] text-muted-foreground sm:ml-auto">
           AI 응답 시뮬레이션 · 교육용 데모
         </p>
       </div>

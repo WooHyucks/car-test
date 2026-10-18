@@ -9,9 +9,16 @@ export type Manufacturer =
 export type ChassisSystem =
   | "ABS"
   | "ESC"
+  | "TCS"
+  | "EBD"
+  | "BAS"
   | "EPS"
   | "ECS"
-  | "통합 섀시제어";
+  | "EPB"
+  | "TPMS"
+  | "AWD"
+  | "VDC"
+  | "ICC";
 
 export interface DiagnosisInput {
   manufacturer: Manufacturer | "";

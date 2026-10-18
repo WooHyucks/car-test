@@ -20,10 +20,90 @@ export const MODELS_BY_MANUFACTURER: Record<Manufacturer, string[]> = {
 
 export const YEARS = Array.from({ length: 9 }, (_, i) => String(2018 + i));
 
-export const CHASSIS_SYSTEMS: { value: ChassisSystem; label: string }[] = [
-  { value: "ABS", label: "ABS (잠김 방지 제동 시스템)" },
-  { value: "ESC", label: "ESC (차체 자세 제어 시스템)" },
-  { value: "EPS", label: "EPS (전자식 파워 스티어링)" },
-  { value: "ECS", label: "ECS (전자제어 서스펜션)" },
-  { value: "통합 섀시제어", label: "통합 섀시제어" },
+/** value = 약어, label = 약어 (영문 풀네임) */
+export const CHASSIS_SYSTEMS: {
+  value: ChassisSystem;
+  abbr: string;
+  label: string;
+  fullEn: string;
+}[] = [
+  {
+    value: "ABS",
+    abbr: "ABS",
+    fullEn: "Anti-lock Braking System",
+    label: "ABS (Anti-lock Braking System)",
+  },
+  {
+    value: "ESC",
+    abbr: "ESC",
+    fullEn: "Electronic Stability Control",
+    label: "ESC (Electronic Stability Control)",
+  },
+  {
+    value: "TCS",
+    abbr: "TCS",
+    fullEn: "Traction Control System",
+    label: "TCS (Traction Control System)",
+  },
+  {
+    value: "EBD",
+    abbr: "EBD",
+    fullEn: "Electronic Brakeforce Distribution",
+    label: "EBD (Electronic Brakeforce Distribution)",
+  },
+  {
+    value: "BAS",
+    abbr: "BAS",
+    fullEn: "Brake Assist System",
+    label: "BAS (Brake Assist System)",
+  },
+  {
+    value: "EPS",
+    abbr: "EPS",
+    fullEn: "Electric Power Steering",
+    label: "EPS (Electric Power Steering)",
+  },
+  {
+    value: "ECS",
+    abbr: "ECS",
+    fullEn: "Electronically Controlled Suspension",
+    label: "ECS (Electronically Controlled Suspension)",
+  },
+  {
+    value: "EPB",
+    abbr: "EPB",
+    fullEn: "Electronic Parking Brake",
+    label: "EPB (Electronic Parking Brake)",
+  },
+  {
+    value: "TPMS",
+    abbr: "TPMS",
+    fullEn: "Tire Pressure Monitoring System",
+    label: "TPMS (Tire Pressure Monitoring System)",
+  },
+  {
+    value: "AWD",
+    abbr: "AWD",
+    fullEn: "All-Wheel Drive Control",
+    label: "AWD (All-Wheel Drive Control)",
+  },
+  {
+    value: "VDC",
+    abbr: "VDC",
+    fullEn: "Vehicle Dynamic Control",
+    label: "VDC (Vehicle Dynamic Control)",
+  },
+  {
+    value: "ICC",
+    abbr: "ICC",
+    fullEn: "Integrated Chassis Control",
+    label: "ICC (Integrated Chassis Control)",
+  },
 ];
+
+export function getChassisSystemLabel(value: string): string {
+  const found = CHASSIS_SYSTEMS.find((s) => s.value === value);
+  if (found) return `${found.abbr} (${found.fullEn})`;
+  if (value === "통합 섀시제어") return "ICC (Integrated Chassis Control)";
+  return value;
+}

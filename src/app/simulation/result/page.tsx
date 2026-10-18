@@ -193,9 +193,10 @@ export default function SimulationResultPage() {
         </CardContent>
       </Card>
 
-      <div className="mt-6 flex flex-wrap gap-3">
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <Button
           variant="outline"
+          className="w-full sm:w-auto"
           onClick={() => router.push(`/simulation`)}
         >
           <RefreshCw />
@@ -203,13 +204,18 @@ export default function SimulationResultPage() {
         </Button>
         <Button
           variant="outline"
+          className="w-full sm:w-auto"
           render={<Link href="/simulation" />}
           nativeButton={false}
         >
           <ArrowLeft />
           다른 시나리오 선택
         </Button>
-        <Button render={<Link href="/analytics" />} nativeButton={false}>
+        <Button
+          className="w-full sm:w-auto"
+          render={<Link href="/analytics" />}
+          nativeButton={false}
+        >
           <BarChart3 />
           학습 분석 확인
         </Button>
