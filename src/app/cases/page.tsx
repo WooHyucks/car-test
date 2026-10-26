@@ -131,8 +131,8 @@ export default function CasesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <div className="space-y-1.5">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
                 <Label>사례 제목</Label>
                 <Input
                   value={form.title}
@@ -142,8 +142,8 @@ export default function CasesPage() {
                   placeholder="예: 배선 점검 생략 패턴"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1.5">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
                   <Label>DTC</Label>
                   <Input
                     className="font-mono uppercase"
@@ -152,7 +152,7 @@ export default function CasesPage() {
                     placeholder="C0035"
                   />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   <Label>차량</Label>
                   <Input
                     value={form.vehicle}
@@ -163,7 +163,7 @@ export default function CasesPage() {
                   />
                 </div>
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <Label>고장코드명</Label>
                 <Input
                   value={form.dtcName}
@@ -173,10 +173,9 @@ export default function CasesPage() {
                   placeholder="DTC 입력 시 자동 매칭"
                 />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <Label>발견한 내용</Label>
                 <Textarea
-                  className="min-h-24"
                   value={form.finding}
                   onChange={(e) =>
                     setForm((p) => ({ ...p, finding: e.target.value }))
@@ -184,7 +183,7 @@ export default function CasesPage() {
                   placeholder="학생 반응, 오개념, 진단 포인트 등"
                 />
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-2">
                 <Label>다음 수업 메모</Label>
                 <Textarea
                   className="min-h-20"
@@ -195,7 +194,7 @@ export default function CasesPage() {
                   placeholder="보충 학습·실습 개선 아이디어"
                 />
               </div>
-              <Button type="submit" className="h-9 w-full">
+              <Button type="submit" className="h-10 w-full">
                 사례 저장
               </Button>
             </form>

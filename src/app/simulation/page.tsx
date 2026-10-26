@@ -125,11 +125,11 @@ export default function SimulationPage() {
           return (
             <Card
               key={scenario.id}
-              className="flex flex-col border-border bg-card shadow-none ring-1 ring-border"
+              className="surface-card surface-card-hover flex flex-col border-0 shadow-none ring-0"
             >
               <CardHeader>
                 <div className="mb-2 flex items-center justify-between">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <div className="flex size-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-sm">
                     <Icon className="size-5" />
                   </div>
                   <Badge

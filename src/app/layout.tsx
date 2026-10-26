@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
-import { Noto_Sans_KR, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Sans_KR, Geist_Mono, Outfit } from "next/font/google";
 import { Toaster } from "sonner";
 import { AppShell } from "@/components/layout/app-shell";
 import "./globals.css";
 
-const notoSansKr = Noto_Sans_KR({
+const ibmPlexSansKr = IBM_Plex_Sans_KR({
   variable: "--font-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+});
+
+const outfit = Outfit({
+  variable: "--font-heading",
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
@@ -29,12 +35,14 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${notoSansKr.variable} ${geistMono.variable} h-full`}
+      className={`${ibmPlexSansKr.variable} ${outfit.variable} ${geistMono.variable} h-full`}
     >
       <body className="min-h-full font-sans antialiased">
         <AppShell>{children}</AppShell>
         <Toaster
           position="top-right"
+          richColors
+          closeButton
           toastOptions={{
             className: "text-sm",
           }}

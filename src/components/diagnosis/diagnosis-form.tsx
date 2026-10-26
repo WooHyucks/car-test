@@ -131,7 +131,7 @@ export function DiagnosisForm({ onSubmit, isLoading }: DiagnosisFormProps) {
   };
 
   return (
-    <Card className="border-border bg-card shadow-none ring-1 ring-border">
+    <Card className="surface-card border-0 shadow-none ring-0">
       <CardHeader>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
@@ -157,7 +157,7 @@ export function DiagnosisForm({ onSubmit, isLoading }: DiagnosisFormProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid gap-5 md:grid-cols-2">
             <Field label="제조사">
               <Select
@@ -263,38 +263,38 @@ export function DiagnosisForm({ onSubmit, isLoading }: DiagnosisFormProps) {
             </div>
 
             {matchedDtc ? (
-              <div className="flex flex-wrap items-center gap-2 rounded-lg border border-primary/20 bg-accent/40 px-3 py-2.5 text-sm">
+              <div className="flex flex-wrap items-center gap-2 rounded-xl border border-primary/20 bg-gradient-to-r from-blue-50 to-sky-50/80 px-3.5 py-3 text-sm shadow-sm">
                 <BookOpenCheck className="size-4 shrink-0 text-primary" />
                 <span className="font-mono font-semibold text-foreground">
                   {matchedDtc.code}
                 </span>
-                <Badge variant="outline" className="font-mono">
+                <Badge variant="outline" className="border-primary/20 bg-white font-mono">
                   {matchedDtc.abbr}
                 </Badge>
                 <span className="text-muted-foreground">·</span>
                 <span className="text-foreground">{matchedDtc.name}</span>
-                <span className="ml-auto flex items-center gap-1 text-[11px] text-muted-foreground">
+                <span className="ml-auto flex items-center gap-1 text-[11px] text-primary/80">
                   <Sparkles className="size-3" />
                   카탈로그 자동 매칭
                 </span>
               </div>
             ) : form.dtcCode.trim().length >= 2 ? (
-              <div className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+              <div className="rounded-xl border border-dashed border-border bg-slate-50 px-3.5 py-2.5 text-xs text-muted-foreground">
                 일치하는 DTC가 없습니다. 아래 추천 코드에서 선택하거나 데모
                 카탈로그 코드를 입력해 주세요.
               </div>
             ) : null}
 
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-2">
               {suggestions.map((item) => (
                 <button
                   key={item.code}
                   type="button"
                   disabled={isLoading}
                   onClick={() => applyDtcEntry(item)}
-                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-2 py-1 text-[11px] transition-colors hover:border-primary/40 hover:bg-accent"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-white px-2.5 py-1.5 text-[11px] shadow-[0_1px_2px_rgb(15_23_42/0.04)] transition-all hover:border-primary/40 hover:bg-blue-50 hover:text-blue-900"
                 >
-                  <span className="font-mono font-medium">{item.code}</span>
+                  <span className="font-mono font-semibold">{item.code}</span>
                   <span className="text-muted-foreground">{item.abbr}</span>
                 </button>
               ))}
@@ -346,7 +346,7 @@ function Field({
 }) {
   return (
     <div className="space-y-2">
-      <Label className="text-sm font-medium">{label}</Label>
+      <Label>{label}</Label>
       {children}
     </div>
   );

@@ -236,7 +236,7 @@ export function SimulationWorkspace({
               <div ref={chatEndRef} />
             </div>
             <form
-              className="flex gap-2 border-t border-border p-3"
+              className="flex gap-2 border-t border-border bg-slate-50/50 p-3"
               onSubmit={(e) => {
                 e.preventDefault();
                 void sendMessage(input);
@@ -251,8 +251,9 @@ export function SimulationWorkspace({
               />
               <Button
                 type="submit"
+                size="icon"
                 disabled={isTyping || !input.trim()}
-                className="shrink-0"
+                className="size-10 shrink-0"
               >
                 <Send />
               </Button>

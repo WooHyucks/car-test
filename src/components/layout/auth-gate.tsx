@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Cpu, Lock, Loader2 } from "lucide-react";
+import { Cpu, Lock, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   ACCESS_STORAGE_KEY,
   verifyAccessPassword,
@@ -43,7 +44,6 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {/* children은 항상 렌더하여 Instant navigation 세그먼트 검증을 유지합니다 */}
       <div
         aria-hidden={!isUnlocked}
         inert={!isUnlocked ? true : undefined}
@@ -53,28 +53,55 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
       </div>
 
       {!isUnlocked ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0b1220] px-4">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div className="absolute -left-20 top-10 size-72 rounded-full bg-blue-600/20 blur-3xl" />
+            <div className="absolute -right-10 bottom-10 size-80 rounded-full bg-sky-500/10 blur-3xl" />
+            <div
+              className="absolute inset-0 opacity-30"
+              style={{
+                backgroundImage:
+                  "linear-gradient(to right, rgb(148 163 184 / 0.12) 1px, transparent 1px), linear-gradient(to bottom, rgb(148 163 184 / 0.12) 1px, transparent 1px)",
+                backgroundSize: "32px 32px",
+              }}
+            />
+          </div>
+
           {status === "loading" ? (
-            <Loader2 className="size-6 animate-spin text-primary" />
+            <Loader2 className="relative size-7 animate-spin text-blue-400" />
           ) : (
-            <div className="w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-sm ring-1 ring-border">
+            <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-slate-900/80 p-7 shadow-2xl shadow-black/40 backdrop-blur-xl">
               <div className="mb-6 text-center">
-                <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                  <Cpu className="size-6" />
+                <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-900/50">
+                  <Cpu className="size-7" />
                 </div>
-                <h1 className="text-lg font-semibold tracking-tight">
+                <h1 className="font-heading text-2xl font-semibold tracking-tight text-white">
                   CHASSIS AI
                 </h1>
-                <p className="mt-1 text-xs text-muted-foreground">
+                <p className="mt-1.5 text-sm text-slate-400">
                   교육용 프로토타입 · 접근 제한
                 </p>
+                <div className="mt-3 flex justify-center gap-2">
+                  <Badge
+                    variant="outline"
+                    className="border-white/10 bg-white/5 text-slate-300"
+                  >
+                    <ShieldCheck className="size-3" />
+                    Secure Demo Gate
+                  </Badge>
+                </div>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="access-password">접속 비밀번호</Label>
+                  <Label
+                    htmlFor="access-password"
+                    className="text-slate-300"
+                  >
+                    접속 비밀번호
+                  </Label>
                   <div className="relative">
-                    <Lock className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+                    <Lock className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-500" />
                     <Input
                       id="access-password"
                       type="password"
@@ -83,7 +110,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
                       placeholder="비밀번호 입력"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-9"
+                      className="h-11 border-white/10 bg-slate-950/60 pl-10 text-white placeholder:text-slate-500"
                       autoFocus
                     />
                   </div>
@@ -91,7 +118,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
 
                 <Button
                   type="submit"
-                  className="h-9 w-full"
+                  className="h-11 w-full bg-blue-600 hover:bg-blue-500"
                   disabled={isSubmitting || !password.trim()}
                 >
                   {isSubmitting ? (
@@ -105,7 +132,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
                 </Button>
               </form>
 
-              <p className="mt-4 text-center text-[11px] text-muted-foreground">
+              <p className="mt-5 text-center text-[11px] text-slate-500">
                 Mock 인증 · 교육용 데모
               </p>
             </div>

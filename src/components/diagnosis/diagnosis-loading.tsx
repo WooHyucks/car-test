@@ -44,7 +44,7 @@ export function DiagnosisLoading({ dtcCode }: { dtcCode?: string }) {
   const CurrentIcon = ICONS[current.icon];
 
   return (
-    <Card className="border-border bg-card shadow-none ring-1 ring-border">
+    <Card className="surface-card border-0 shadow-none ring-0">
       <CardContent className="py-10 sm:py-14">
         <div className="mx-auto max-w-xl">
           <div className="mb-8 flex flex-col items-center text-center">
