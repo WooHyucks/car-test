@@ -60,7 +60,7 @@ export function DiagnosisLoading({ dtcCode }: { dtcCode?: string }) {
             <p className="mt-1 text-xs text-muted-foreground">
               {dtcCode
                 ? `DTC ${dtcCode.toUpperCase()} 분석 파이프라인 실행 중`
-                : "교육용 Mock 분석 파이프라인 실행 중"}
+                : "교육용 AI 분석 파이프라인 실행 중"}
             </p>
           </div>
 
@@ -127,7 +127,7 @@ export function DiagnosisLoading({ dtcCode }: { dtcCode?: string }) {
           <div className="rounded-lg border border-dashed border-border bg-muted/30 px-4 py-3">
             <div className="mb-2 flex items-center gap-2 text-xs font-medium text-foreground">
               <Database className="size-3.5 text-primary" />
-              Mock 검색 결과 스트림
+              AI 검색 결과 스트림
             </div>
             <ul className="space-y-1.5 font-mono text-[11px] text-muted-foreground">
               {[

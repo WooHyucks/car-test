@@ -2,7 +2,7 @@ export type Manufacturer =
   | "현대자동차"
   | "기아"
   | "제네시스"
-  | "르노삼성"
+  | "르노코리아"
   | "BMW"
   | "Mercedes-Benz";
 
@@ -102,6 +102,17 @@ export interface SimulationSession {
   finalCause?: string;
   reasoning?: string;
   repairMethod?: string;
+  /** 진단→실습에서 병합된 실제 차량/DTC */
+  vehicle?: {
+    manufacturer: string;
+    model: string;
+    year: string;
+    system: string;
+  };
+  dtcCode?: string;
+  dtcName?: string;
+  symptom?: string;
+  scenarioTitle?: string;
 }
 
 export interface EvaluationScores {

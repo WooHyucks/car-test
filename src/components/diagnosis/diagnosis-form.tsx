@@ -85,7 +85,6 @@ export function DiagnosisForm({ onSubmit, isLoading }: DiagnosisFormProps) {
       ...prev,
       dtcCode: entry.code,
       dtcName: entry.name,
-      symptoms: prev.symptoms.trim() ? prev.symptoms : entry.defaultSymptoms,
       system: (prev.system || entry.system) as ChassisSystem | "",
     }));
   };
@@ -97,8 +96,6 @@ export function DiagnosisForm({ onSubmit, isLoading }: DiagnosisFormProps) {
       ...prev,
       dtcCode: upper,
       dtcName: entry ? entry.name : prev.dtcName,
-      symptoms:
-        entry && !prev.symptoms.trim() ? entry.defaultSymptoms : prev.symptoms,
       system:
         entry && !prev.system
           ? (entry.system as ChassisSystem)
@@ -301,14 +298,17 @@ export function DiagnosisForm({ onSubmit, isLoading }: DiagnosisFormProps) {
             </div>
           </div>
 
-          <Field label="차량 증상">
+          <Field label="차량 증상 (직접 작성)">
             <Textarea
-              placeholder="예: ABS 경고등 점등, 제동 시 진동 발생"
+              placeholder="학생이 관찰한 증상을 직접 입력해 주세요. (예: ABS 경고등 점등, 제동 시 진동)"
               value={form.symptoms}
               onChange={(e) => update("symptoms", e.target.value)}
               disabled={isLoading}
               className="min-h-24"
             />
+            <p className="text-[11px] text-muted-foreground">
+              DTC 선택과 별도로 증상을 직접 작성합니다. 자동으로 채워지지 않습니다.
+            </p>
           </Field>
 
           <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">

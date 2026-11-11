@@ -10,7 +10,22 @@ export interface LearningCase {
   source: "seed" | "user";
 }
 
+/** 진단→실습→최종제출 플로우에서 활용사례 폼으로 넘기는 초안 */
+export interface FlowCaseDraft {
+  title: string;
+  dtcCode: string;
+  dtcName: string;
+  vehicle: string;
+  finding: string;
+  teachingNote: string;
+  finalCause: string;
+  reasoning: string;
+  repairMethod: string;
+  savedAt: string;
+}
+
 const STORAGE_KEY = "chassis-ai-learning-cases";
+const FLOW_DRAFT_KEY = "chassis-ai-flow-case-draft";
 
 export const SEED_CASES: LearningCase[] = [
   {
@@ -92,4 +107,57 @@ export function deleteUserCase(id: string): void {
     STORAGE_KEY,
     JSON.stringify(existing.filter((c) => c.id !== id))
   );
+}
+
+export function saveFlowCaseDraft(draft: FlowCaseDraft): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(FLOW_DRAFT_KEY, JSON.stringify(draft));
+}
+
+export function loadFlowCaseDraft(): FlowCaseDraft | null {
+  if (typeof window === "undefined") return null;
+  const raw = localStorage.getItem(FLOW_DRAFT_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as FlowCaseDraft;
+  } catch {
+    return null;
+  }
+}
+
+export function clearFlowCaseDraft(): void {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(FLOW_DRAFT_KEY);
+}
+
+/**
+ * 최종 진단 제출 직후: DTC·차량·고장코드명만 초안에 저장.
+ * 사례 제목·발견 내용은 활용사례에서 사용자가 직접 작성.
+ */
+export function captureFlowAsCase(input: {
+  dtcCode: string;
+  dtcName: string;
+  vehicle: string;
+  scenarioTitle?: string;
+  finalCause: string;
+  reasoning: string;
+  repairMethod: string;
+}): FlowCaseDraft {
+  const dtc = input.dtcCode.trim().toUpperCase();
+
+  const draft: FlowCaseDraft = {
+    title: "",
+    dtcCode: dtc,
+    dtcName: input.dtcName.trim(),
+    vehicle: input.vehicle.trim(),
+    finding: "",
+    teachingNote: "",
+    finalCause: input.finalCause.trim(),
+    reasoning: input.reasoning.trim(),
+    repairMethod: input.repairMethod.trim(),
+    savedAt: new Date().toISOString(),
+  };
+
+  saveFlowCaseDraft(draft);
+  return draft;
 }

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   BarChart3,
+  BookMarked,
   RefreshCw,
   Trophy,
   Lightbulb,
@@ -59,14 +60,20 @@ export default function SimulationResultPage() {
   }
 
   const scenario = getScenarioById(session.scenarioId);
+  const vehicle = session.vehicle ?? scenario?.vehicle;
+  const vehicleLabel = vehicle
+    ? `${vehicle.year} ${vehicle.manufacturer} ${vehicle.model}`
+    : "";
+  const dtcCode = session.dtcCode ?? scenario?.dtcCode;
+  const dtcName = session.dtcName ?? scenario?.dtcName;
 
   return (
     <div>
       <PageHeader
         title="AI 진단 실습 결과"
         description={
-          scenario
-            ? `${scenario.title} · ${scenario.vehicle.year} ${scenario.vehicle.manufacturer} ${scenario.vehicle.model}`
+          vehicleLabel
+            ? `${session.scenarioTitle ?? scenario?.title ?? "실습"} · ${vehicleLabel}${dtcCode ? ` · ${dtcCode}` : ""}`
             : "실습 평가 결과"
         }
       />
@@ -87,8 +94,8 @@ export default function SimulationResultPage() {
               <Trophy className="size-6" />
             </div>
             <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
-              점수는 학생이 선택한 진단 단계와 최종 답변에 따라 달라집니다.
-              Mock Data 기반 교육용 평가입니다.
+              점수는 학생이 선택한 진단 단계와 최종 답변에 따라 달라집니다. AI
+              기반 교육용 평가입니다.
             </p>
           </CardContent>
         </Card>
@@ -170,10 +177,17 @@ export default function SimulationResultPage() {
             {result.feedback}
           </p>
           {session.finalCause ? (
-            <div className="mt-4 grid gap-3 border-t border-border pt-4 sm:grid-cols-3 text-sm">
+            <div className="mt-4 grid gap-3 border-t border-border pt-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
               <div>
                 <p className="text-xs text-muted-foreground">제출한 원인</p>
                 <p className="mt-1 font-medium">{session.finalCause}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">DTC · 고장코드명</p>
+                <p className="mt-1 font-medium">
+                  {dtcCode}
+                  {dtcName ? ` · ${dtcName}` : ""}
+                </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">사용한 진단 도구</p>
@@ -190,10 +204,31 @@ export default function SimulationResultPage() {
               </div>
             </div>
           ) : null}
+          <p className="mt-4 text-xs text-muted-foreground">
+            DTC · 차량 · 고장코드명은 활용 사례 폼에 자동 채워집니다. 사례 제목과
+            발견한 내용은 직접 작성해 주세요.
+          </p>
         </CardContent>
       </Card>
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <Button
+          className="w-full sm:w-auto"
+          render={<Link href="/cases" />}
+          nativeButton={false}
+        >
+          <BookMarked />
+          활용 사례 확인
+        </Button>
+        <Button
+          variant="outline"
+          className="w-full sm:w-auto"
+          render={<Link href="/analytics" />}
+          nativeButton={false}
+        >
+          <BarChart3 />
+          학습 분석 확인
+        </Button>
         <Button
           variant="outline"
           className="w-full sm:w-auto"
@@ -210,14 +245,6 @@ export default function SimulationResultPage() {
         >
           <ArrowLeft />
           다른 시나리오 선택
-        </Button>
-        <Button
-          className="w-full sm:w-auto"
-          render={<Link href="/analytics" />}
-          nativeButton={false}
-        >
-          <BarChart3 />
-          학습 분석 확인
         </Button>
       </div>
     </div>

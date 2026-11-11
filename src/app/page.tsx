@@ -144,7 +144,7 @@ export default function DashboardPage() {
                 <Sparkles className="size-3" />
                 발표 시연용 프로토타입
               </Badge>
-              <Badge variant="outline">Mock AI · No Live LLM</Badge>
+              <Badge variant="outline">AI · 교육용 데모</Badge>
             </div>
             <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               CHASSIS AI
@@ -322,7 +322,7 @@ export default function DashboardPage() {
             <div>
               <CardTitle className="font-heading">최근 학습 활동</CardTitle>
               <CardDescription>
-                Mock Data 기반 예시 활동 기록입니다.
+                AI 기반 예시 활동 기록입니다.
               </CardDescription>
             </div>
           </div>

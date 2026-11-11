@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -13,13 +14,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import type { Scenario } from "@/lib/types";
 
 interface SubmitModalProps {
@@ -44,11 +38,16 @@ export function SubmitModal({
   const [repairMethod, setRepairMethod] = useState("");
 
   const handleSubmit = () => {
-    if (!finalCause) return toast.error("최종 고장 원인을 선택해 주세요.");
+    if (!finalCause.trim())
+      return toast.error("최종 고장 원인을 작성해 주세요.");
     if (!reasoning.trim()) return toast.error("판단 근거를 입력해 주세요.");
     if (!repairMethod.trim())
       return toast.error("권장 정비 방법을 입력해 주세요.");
-    onSubmit({ finalCause, reasoning, repairMethod });
+    onSubmit({
+      finalCause: finalCause.trim(),
+      reasoning,
+      repairMethod,
+    });
   };
 
   return (
@@ -57,29 +56,22 @@ export function SubmitModal({
         <DialogHeader>
           <DialogTitle>최종 진단 제출</DialogTitle>
           <DialogDescription>
-            점검 결과를 바탕으로 고장 원인과 근거를 제출합니다. AI가 정답을 대신
-            알려주지 않으며, 제출 후 학습 평가가 진행됩니다.
+            점검 결과를 바탕으로 고장 원인과 근거를 직접 작성해 제출합니다. AI가
+            정답을 대신 알려주지 않으며, 제출 후 학습 평가가 진행됩니다.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <div className="space-y-2">
-            <Label>최종 고장 원인</Label>
-            <Select
-              value={finalCause || null}
-              onValueChange={(v) => setFinalCause(v ?? "")}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="원인 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                {scenario.causeOptions.map((opt) => (
-                  <SelectItem key={opt} value={opt}>
-                    {opt}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label>최종 고장 원인 (직접 작성)</Label>
+            <Input
+              placeholder="예: 좌측 전륜 휠 속도센서 자체 이상"
+              value={finalCause}
+              onChange={(e) => setFinalCause(e.target.value)}
+            />
+            <p className="text-[11px] text-muted-foreground">
+              참고 키워드(선택): {scenario.causeOptions.slice(0, 3).join(" · ")}
+            </p>
           </div>
 
           <div className="space-y-2">

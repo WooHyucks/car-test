@@ -1,10 +1,11 @@
 import type { ChassisSystem, Manufacturer } from "./types";
+import { RENAULT_MODELS } from "./renault-mock";
 
 export const MANUFACTURERS: Manufacturer[] = [
   "현대자동차",
   "기아",
   "제네시스",
-  "르노삼성",
+  "르노코리아",
   "BMW",
   "Mercedes-Benz",
 ];
@@ -13,7 +14,7 @@ export const MODELS_BY_MANUFACTURER: Record<Manufacturer, string[]> = {
   현대자동차: ["아반떼", "쏘나타", "그랜저", "투싼"],
   기아: ["K3", "K5", "K8", "스포티지"],
   제네시스: ["G70", "G80", "GV70", "GV80"],
-  르노삼성: ["SM6", "QM6", "XM3", "QM3"],
+  르노코리아: [...RENAULT_MODELS],
   BMW: ["3 Series", "5 Series", "X3", "X5"],
   "Mercedes-Benz": ["C-Class", "E-Class", "GLC", "GLE"],
 };

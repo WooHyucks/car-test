@@ -132,7 +132,7 @@ export function Sidebar({ open = false, onClose }: SidebarProps) {
               Demo Mode
             </div>
             <p className="text-[11px] leading-relaxed text-slate-400">
-              교육용 프로토타입 · Mock AI Engine
+              교육용 프로토타입 · AI Engine
             </p>
             <Separator className="my-2.5 bg-white/10" />
             <p className="text-[10px] text-slate-500">

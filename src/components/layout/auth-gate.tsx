@@ -133,7 +133,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
               </form>
 
               <p className="mt-5 text-center text-[11px] text-slate-500">
-                Mock 인증 · 교육용 데모
+                AI 인증 · 교육용 데모
               </p>
             </div>
           )}

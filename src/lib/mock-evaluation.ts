@@ -16,6 +16,22 @@ function clamp(n: number, min = 40, max = 98): number {
   return Math.max(min, Math.min(max, Math.round(n)));
 }
 
+/** 학생이 자유 서술한 고장 원인과 모범 답안을 느슨하게 비교 */
+function isCauseMatch(answer: string, correct: string): boolean {
+  const a = answer.trim().toLowerCase().replace(/\s+/g, "");
+  const c = correct.trim().toLowerCase().replace(/\s+/g, "");
+  if (!a) return false;
+  if (a === c || a.includes(c) || c.includes(a)) return true;
+
+  const keywords = correct
+    .split(/[\s·,/]+/)
+    .map((k) => k.trim().toLowerCase())
+    .filter((k) => k.length >= 2);
+
+  const hit = keywords.filter((k) => a.includes(k)).length;
+  return hit >= Math.min(2, keywords.length);
+}
+
 export function evaluateSimulation(
   session: SimulationSession
 ): EvaluationResult {
@@ -46,7 +62,10 @@ export function evaluateSimulation(
   const toolCoverage =
     IDEAL_TOOLS.filter((t) => tools.has(t)).length / IDEAL_TOOLS.length;
 
-  const causeCorrect = session.finalCause === scenario.correctCause;
+  const causeCorrect = isCauseMatch(
+    session.finalCause ?? "",
+    scenario.correctCause
+  );
   const reasoningLength = (session.reasoning ?? "").trim().length;
   const repairLength = (session.repairMethod ?? "").trim().length;
   const chatDepth = session.messages.filter((m) => m.role === "student").length;

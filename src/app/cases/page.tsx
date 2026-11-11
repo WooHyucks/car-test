@@ -8,7 +8,6 @@ import {
   Trash2,
   ArrowRight,
   GraduationCap,
-  BarChart3,
   ScanSearch,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -26,8 +25,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  clearFlowCaseDraft,
   deleteUserCase,
   loadCases,
+  loadFlowCaseDraft,
   saveUserCase,
   type LearningCase,
 } from "@/lib/cases";
@@ -45,9 +46,23 @@ const EMPTY = {
 export default function CasesPage() {
   const [cases, setCases] = useState<LearningCase[]>([]);
   const [form, setForm] = useState(EMPTY);
+  const [fromFlow, setFromFlow] = useState(false);
 
   useEffect(() => {
     setCases(loadCases());
+    const draft = loadFlowCaseDraft();
+    if (!draft) return;
+
+    const dtcName = draft.dtcName || lookupDtc(draft.dtcCode)?.name || "";
+    setForm({
+      title: "",
+      dtcCode: draft.dtcCode.toUpperCase(),
+      dtcName,
+      vehicle: draft.vehicle,
+      finding: "",
+      teachingNote: "",
+    });
+    setFromFlow(true);
   }, []);
 
   const refresh = () => setCases(loadCases());
@@ -75,6 +90,8 @@ export default function CasesPage() {
       finding: form.finding.trim(),
       teachingNote: form.teachingNote.trim() || "수업 보완 메모를 추가해 주세요.",
     });
+    clearFlowCaseDraft();
+    setFromFlow(false);
     setForm(EMPTY);
     refresh();
     toast.success("활용 사례가 저장되었습니다.");
@@ -97,10 +114,10 @@ export default function CasesPage() {
         <CardContent>
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
             {[
-              { icon: ScanSearch, label: "DTC → 고장코드" },
-              { icon: GraduationCap, label: "학생 진단 실습" },
-              { icon: BarChart3, label: "평균·취약점 분석" },
-              { icon: Lightbulb, label: "다음 수업 추천" },
+              { icon: ScanSearch, label: "고장진단·분석" },
+              { icon: GraduationCap, label: "고장실습" },
+              { icon: BookMarked, label: "최종진단 제출" },
+              { icon: Lightbulb, label: "활용사례 자동반영" },
             ].map((step, i) => {
               const Icon = step.icon;
               return (
@@ -131,6 +148,28 @@ export default function CasesPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {fromFlow ? (
+              <div className="mb-4 rounded-lg border border-primary/20 bg-accent/40 px-3 py-2.5 text-xs leading-relaxed text-muted-foreground">
+                <span className="font-medium text-foreground">
+                  실습 플로우 데이터 반영
+                </span>
+                · DTC · 차량 · 고장코드명만 자동 채움.{" "}
+                <span className="text-foreground">사례 제목</span>과{" "}
+                <span className="text-foreground">발견한 내용</span>은 직접
+                작성해 주세요.
+                <button
+                  type="button"
+                  className="mt-1.5 block text-primary underline-offset-2 hover:underline"
+                  onClick={() => {
+                    clearFlowCaseDraft();
+                    setFromFlow(false);
+                    setForm(EMPTY);
+                  }}
+                >
+                  자동 채움 지우기
+                </button>
+              </div>
+            ) : null}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label>사례 제목</Label>
@@ -171,6 +210,12 @@ export default function CasesPage() {
                     setForm((p) => ({ ...p, dtcName: e.target.value }))
                   }
                   placeholder="DTC 입력 시 자동 매칭"
+                  readOnly={fromFlow && Boolean(form.dtcName)}
+                  className={
+                    fromFlow && form.dtcName
+                      ? "bg-muted/50 text-foreground"
+                      : undefined
+                  }
                 />
               </div>
               <div className="space-y-2">
@@ -204,7 +249,7 @@ export default function CasesPage() {
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <BookMarked className="size-4" />
-            총 {cases.length}건 · 교육용 Mock + 사용자 기록
+            총 {cases.length}건 · 교육용 AI + 사용자 기록
           </div>
 
           {cases.map((item) => {

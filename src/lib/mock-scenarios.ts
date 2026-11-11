@@ -1,4 +1,5 @@
 import { lookupDtc } from "./dtc-catalog";
+import { getRenaultProfile, isRenaultKorea } from "./renault-mock";
 import type { DiagnosisInput, Scenario } from "./types";
 
 export const SCENARIOS: Scenario[] = [
@@ -123,6 +124,13 @@ export function applyDiagnosisToScenario(
   input: DiagnosisInput
 ): Scenario {
   const dtc = input.dtcCode.trim().toUpperCase() || base.dtcCode;
+  const renault = isRenaultKorea(input.manufacturer)
+    ? getRenaultProfile(input.model)
+    : null;
+  const renaultNote = renault
+    ? `\n\n[르노코리아 · ${renault.model}]\n${renault.toolHint}`
+    : "";
+
   return {
     ...base,
     vehicle: {
@@ -134,20 +142,26 @@ export function applyDiagnosisToScenario(
     symptom: input.symptoms.trim() || base.symptom,
     dtcCode: dtc,
     dtcName: input.dtcName.trim() || base.dtcName,
-    initialAiMessage: buildInitialMessage(input, base),
+    initialAiMessage: buildInitialMessage(input, base, renaultNote),
     toolResults: {
       ...base.toolResults,
-      dtc: `DTC ${dtc} — ${input.dtcName.trim() || base.dtcName}이(가) 확인되었습니다.\n차량: ${input.year} ${input.manufacturer} ${input.model}\n증상: ${input.symptoms.trim() || base.symptom}\n\n※ 교육용 가상 진단 데이터입니다. (고장 진단에서 전달된 정보)`,
+      dtc: `DTC ${dtc} — ${input.dtcName.trim() || base.dtcName}이(가) 확인되었습니다.\n차량: ${input.year} ${input.manufacturer} ${input.model}\n증상: ${input.symptoms.trim() || base.symptom}${renaultNote}\n\n※ 교육용 가상 진단 데이터입니다. (고장 진단에서 전달된 정보)`,
+      sensor: `${base.toolResults.sensor}${renaultNote}`,
+      sensor_status: `${base.toolResults.sensor_status}${renaultNote}`,
     },
   };
 }
 
-function buildInitialMessage(input: DiagnosisInput, base: Scenario): string {
+function buildInitialMessage(
+  input: DiagnosisInput,
+  base: Scenario,
+  renaultNote: string
+): string {
   const symptom = input.symptoms.trim() || base.symptom;
   const dtc = input.dtcCode.trim().toUpperCase() || base.dtcCode;
   const vehicle = `${input.year} ${input.manufacturer} ${input.model}`.trim();
 
-  return `${vehicle} 차량에서 다음 증상이 확인되었습니다.\n\n증상: ${symptom}\nDTC: ${dtc} (${input.dtcName.trim() || base.dtcName})\n\n진단기를 통해 관련 고장코드가 확인된 상황입니다.\n\n어떤 항목부터 점검하시겠습니까?`;
+  return `${vehicle} 차량에서 다음 증상이 확인되었습니다.\n\n증상: ${symptom}\nDTC: ${dtc} (${input.dtcName.trim() || base.dtcName})${renaultNote}\n\n진단기를 통해 관련 고장코드가 확인된 상황입니다.\n\n어떤 항목부터 점검하시겠습니까?`;
 }
 
 export function generateWheelSpeedData() {

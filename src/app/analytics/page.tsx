@@ -284,7 +284,7 @@ export default function AnalyticsPage() {
               AI 교수자 인사이트
             </CardTitle>
             <CardDescription>
-              Mock AI 기반 수업 개선 제안 · 가상의 예시 데이터
+              AI 기반 수업 개선 제안 · 가상의 예시 데이터
             </CardDescription>
           </CardHeader>
           <CardContent>

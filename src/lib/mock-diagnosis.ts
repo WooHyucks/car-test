@@ -6,11 +6,12 @@ import {
   lookupDtc,
   normalizeDtc,
 } from "./dtc-catalog";
+import { applyRenaultOverlay } from "./renault-mock";
 
 export { getSupportedDtcs } from "./dtc-catalog";
 
 const DISCLAIMER =
-  "이 내용은 교육용 Mock 분석 결과이며 실제 차량의 확정 진단이 아닙니다. 제조사별 DTC 정의와 진단 절차는 다를 수 있으므로 공식 정비 정보를 확인해야 합니다.";
+  "이 내용은 교육용 AI 분석 결과이며 실제 차량의 확정 진단이 아닙니다. 제조사별 DTC 정의와 진단 절차는 다를 수 있으므로 공식 정비 정보를 확인해야 합니다.";
 
 const CAUSES_BY_CATEGORY: Record<DtcCategory, FaultCause[]> = {
   wheel_speed: [
@@ -379,7 +380,7 @@ export function analyzeDiagnosis(input: DiagnosisInput): DiagnosisResult {
     };
   }
 
-  return buildResult(entry, input);
+  return applyRenaultOverlay(buildResult(entry, input), input);
 }
 
 export const ANALYSIS_STAGES = [

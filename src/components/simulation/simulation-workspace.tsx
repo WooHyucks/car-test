@@ -26,6 +26,8 @@ import {
 import { SensorChart } from "./sensor-chart";
 import { SubmitModal } from "./submit-modal";
 import { getMockChatResponse, delay } from "@/lib/mock-ai";
+import { captureFlowAsCase } from "@/lib/cases";
+import { lookupDtc } from "@/lib/dtc-catalog";
 import { saveSimulationSession } from "@/lib/session";
 import { getChassisSystemLabel } from "@/lib/vehicles";
 import type { ChatMessage, Scenario, ToolAction } from "@/lib/types";
@@ -124,15 +126,37 @@ export function SimulationWorkspace({
     reasoning: string;
     repairMethod: string;
   }) => {
+    const dtcCode = scenario.dtcCode.toUpperCase();
+    const dtcName = scenario.dtcName || lookupDtc(dtcCode)?.name || "";
+    const vehicleLabel = `${scenario.vehicle.year} ${scenario.vehicle.manufacturer} ${scenario.vehicle.model}`;
+
     const session = {
       scenarioId: scenario.id,
       checkedTools,
       messages,
       chatKeywords,
       ...data,
+      vehicle: scenario.vehicle,
+      dtcCode,
+      dtcName,
+      symptom: scenario.symptom,
+      scenarioTitle: scenario.title,
     };
     saveSimulationSession(session);
-    toast.success("진단이 제출되었습니다. 평가 결과로 이동합니다.");
+
+    captureFlowAsCase({
+      dtcCode,
+      dtcName,
+      vehicle: vehicleLabel,
+      scenarioTitle: `${scenario.title} · ${dtcCode}`,
+      finalCause: data.finalCause,
+      reasoning: data.reasoning,
+      repairMethod: data.repairMethod,
+    });
+
+    toast.success(
+      "진단 제출 완료 · 활용 사례에 DTC·차량·고장코드명이 전달되었습니다."
+    );
     router.push("/simulation/result");
   };
 
@@ -327,7 +351,7 @@ export function SimulationWorkspace({
               <CardContent className="py-8 text-center text-xs text-muted-foreground">
                 진단 도구를 선택하면
                 <br />
-                Mock 점검 결과가 표시됩니다.
+                AI 점검 결과가 표시됩니다.
               </CardContent>
             </Card>
           )}
