@@ -15,7 +15,6 @@ import {
   BookMarked,
   BarChart3,
   Sparkles,
-  Play,
 } from "lucide-react";
 import { PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
@@ -159,15 +158,6 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button
-              render={<Link href="/diagnosis" />}
-              nativeButton={false}
-              size="lg"
-              className="h-11 px-5 shadow-md shadow-blue-600/20"
-            >
-              <Play data-icon="inline-start" />
-              시연 시작
-            </Button>
             <Button
               render={<Link href="/analytics" />}
               nativeButton={false}
