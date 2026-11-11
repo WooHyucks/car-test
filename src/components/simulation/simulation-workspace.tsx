@@ -26,6 +26,7 @@ import {
 import { SensorChart } from "./sensor-chart";
 import { SubmitModal } from "./submit-modal";
 import { getMockChatResponse, delay } from "@/lib/mock-ai";
+import { incrementSimulationCompletions } from "@/lib/analytics-stats";
 import { captureFlowAsCase } from "@/lib/cases";
 import { lookupDtc } from "@/lib/dtc-catalog";
 import { saveSimulationSession } from "@/lib/session";
@@ -143,6 +144,7 @@ export function SimulationWorkspace({
       scenarioTitle: scenario.title,
     };
     saveSimulationSession(session);
+    incrementSimulationCompletions();
 
     captureFlowAsCase({
       dtcCode,

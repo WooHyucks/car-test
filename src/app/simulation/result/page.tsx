@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   BarChart3,
-  BookMarked,
   RefreshCw,
   Trophy,
   Lightbulb,
@@ -213,16 +212,7 @@ export default function SimulationResultPage() {
 
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <Button
-          className="w-full sm:w-auto"
-          render={<Link href="/cases" />}
-          nativeButton={false}
-        >
-          <BookMarked />
-          활용 사례 확인
-        </Button>
-        <Button
-          variant="outline"
-          className="w-full sm:w-auto"
+          className="w-full bg-blue-600 text-white shadow-sm shadow-blue-600/25 hover:bg-blue-700 sm:w-auto"
           render={<Link href="/analytics" />}
           nativeButton={false}
         >

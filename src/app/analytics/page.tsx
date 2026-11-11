@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -35,32 +36,42 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  BASE_PARTICIPANTS,
+  getLiveParticipants,
+} from "@/lib/analytics-stats";
 import { ANALYTICS_MOCK } from "@/lib/mock-evaluation";
 
-const STATS = [
-  {
-    label: "참여 학생",
-    value: `${ANALYTICS_MOCK.participants}명`,
-    icon: Users,
-  },
-  {
-    label: "평균 진단 점수",
-    value: `${ANALYTICS_MOCK.averageScore}점`,
-    icon: Target,
-  },
-  {
-    label: "실습 완료율",
-    value: `${ANALYTICS_MOCK.completionRate}%`,
-    icon: CheckCircle2,
-  },
-  {
-    label: "주요 취약 영역",
-    value: ANALYTICS_MOCK.weakArea,
-    icon: AlertTriangle,
-  },
-];
-
 export default function AnalyticsPage() {
+  const [participants, setParticipants] = useState(BASE_PARTICIPANTS);
+
+  useEffect(() => {
+    setParticipants(getLiveParticipants(ANALYTICS_MOCK.participants));
+  }, []);
+
+  const stats = [
+    {
+      label: "참여 학생",
+      value: `${participants}명`,
+      icon: Users,
+    },
+    {
+      label: "평균 진단 점수",
+      value: `${ANALYTICS_MOCK.averageScore}점`,
+      icon: Target,
+    },
+    {
+      label: "실습 완료율",
+      value: `${ANALYTICS_MOCK.completionRate}%`,
+      icon: CheckCircle2,
+    },
+    {
+      label: "주요 취약 영역",
+      value: ANALYTICS_MOCK.weakArea,
+      icon: AlertTriangle,
+    },
+  ];
+
   return (
     <div>
       <PageHeader
@@ -69,12 +80,12 @@ export default function AnalyticsPage() {
       />
 
       <div className="mb-4 rounded-lg border border-border bg-muted/40 px-4 py-3 text-xs text-muted-foreground">
-        모든 통계와 인사이트는 가상의 예시 데이터입니다. · AI 응답 시뮬레이션 ·
-        교육용 데모
+        참여 인원은 최종 진단 제출 시 증가합니다. · AI 응답 시뮬레이션 · 교육용
+        데모
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {STATS.map((stat) => {
+        {stats.map((stat) => {
           const Icon = stat.icon;
           return (
             <Card
